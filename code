@@ -56,7 +56,10 @@ function createBot() {
 // Start the bot
 createBot();
 
-// Keep the bot alive on Replit using Express
+const express = require("express");
 const app = express();
-app.get("/", (req, res) => res.send("Bot is alive!"));
-app.listen(3000, () => console.log("🌍 Web server running on port 3000"));
+
+app.get("/", (req, res) => res.send("Bot is running!"));
+
+app.listen(3000, () => console.log("✅ Web server running on port 3000"));
+
