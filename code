@@ -1,0 +1,62 @@
+const mineflayer = require('mineflayer');
+const express = require("express");
+
+function createBot() {
+    console.log("🟢 Attempting to connect...");
+
+    const bot = mineflayer.createBot({
+        host: 'PALAMPURSMP0.aternos.me', // Change this to your server IP
+        port: 34972, // Change this to your server port
+        username: 'AFK_Bot', // Change this if needed
+        version: '1.21.4' // Change this if your server version updates
+    });
+
+    bot.on('spawn', () => {
+        console.log('✅ Bot joined the server!');
+
+        // 1️⃣ Random Movement to Avoid AFK Kick
+        setInterval(() => {
+            const directions = ['forward', 'back', 'left', 'right'];
+            const randomDirection = directions[Math.floor(Math.random() * directions.length)];
+
+            bot.setControlState(randomDirection, true);
+            bot.setControlState('jump', true);
+
+            setTimeout(() => {
+                bot.setControlState(randomDirection, false);
+                bot.setControlState('jump', false);
+            }, 3000);
+        }, 5000);
+
+        // 2️⃣ Auto Rotate Head Randomly
+        setInterval(() => {
+            const yaw = Math.random() * Math.PI * 2;
+            const pitch = (Math.random() - 0.5) * Math.PI;
+            bot.look(yaw, pitch, true);
+        }, 3000);
+
+        // 3️⃣ Send Random Chat Messages (Optional)
+        setInterval(() => {
+            const messages = ["I'm still here!", "Not AFK!", "Just chilling!", "Minecraft is fun!"];
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            bot.chat(randomMessage);
+        }, 120000); // Sends a message every 2 minutes
+    });
+
+    // Event Listeners for Debugging
+    bot.on('login', () => console.log('🔵 Bot is logging in...'));
+    bot.on('kicked', (reason) => console.log(`⛔ Bot was kicked: ${reason}`));
+    bot.on('error', (err) => console.log(`❌ Error: ${err}`));
+    bot.on('end', () => {
+        console.log('⚠️ Bot disconnected! Reconnecting in 5s...');
+        setTimeout(createBot, 5000);
+    });
+}
+
+// Start the bot
+createBot();
+
+// Keep the bot alive on Replit using Express
+const app = express();
+app.get("/", (req, res) => res.send("Bot is alive!"));
+app.listen(3000, () => console.log("🌍 Web server running on port 3000"));
